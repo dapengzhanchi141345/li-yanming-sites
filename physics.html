@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>格物君·物理专家团 — 全学段物理系统</title>
+<style>
+:root{--bg:#f2f6fa;--card:#fff;--ink:#122438;--accent:#1a4f8f;--accent2:#0e8ba3;--soft:#e2edf7;--ok:#16a34a;--bad:#dc2626;--line:#d5e2ef}
+*{margin:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:linear-gradient(120deg,#0f3460,#0e8ba3);color:#fff;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px}
+input,select{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.note{background:#fff7e6;border:1px solid #ffd580;border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+canvas{border:1px solid var(--line);background:#0f3460;border-radius:8px;margin:10px 0}
+footer{text-align:center;padding:20px;color:#888;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>格物君 · 物理专家团</h1>
+<p>全学段物理系统 · 初中→高中→竞赛 · 力学/电磁/光学/热学 · 公式计算器 · 受力分析画板 · 电路模拟 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="calc">公式计算器</button>
+<button data-t="force">受力分析</button>
+<button data-t="circuit">电路模拟</button>
+<button data-t="exp">实验探究</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按模块点卡片看核心考点; 力学用「公式计算器」, 电学用「电路模拟」。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="calc">
+<h2>物理公式计算器</h2>
+<select id="fType" onchange="calcF()">
+ <option value="s">运动学: s = v₀t + ½at²</option>
+ <option value="v">速度: v = v₀ + at</option>
+ <option value="F">牛顿第二: F = ma</option>
+ <option value="E">动能: E = ½mv²</option>
+ <option value="W">功: W = F·s·cosθ</option>
+ <option value="P">功率: P = Fv</option>
+ <option value="U">欧姆: U = IR</option>
+ <option value="Q">电热: Q = I²Rt</option>
+ <option value="g">重力: G = mg</option>
+</select>
+<input id="a" value="1" style="width:70px"> <input id="b" value="2" style="width:70px"> <input id="c" value="3" style="width:70px">
+<button class="btn" onclick="calcF()">计算</button>
+<div class="out" id="fOut"></div>
+</section>
+
+<section id="force">
+<h2>受力分析画板(拖画力矢量)</h2>
+<p>在画板上按住拖动画出物体受力, 松手显示力的大小(按拖拽距离估), 支持加多个力。</p>
+<canvas id="cvs" width="500" height="300"></canvas>
+<button class="btn" onclick="clearF()">清空</button> <button class="btn" onclick="sumF()">求合力</button>
+<div class="out" id="fSum"></div>
+</section>
+
+<section id="circuit">
+<h2>电路模拟(串并联 + 欧姆定律)</h2>
+<p>电动势 E = <input id="E" value="12" style="width:60px"> V, 内阻 r = <input id="r" value="1" style="width:60px"> Ω</p>
+<p>外电阻 R = <input id="R" value="3" style="width:60px"> Ω</p>
+<button class="btn" onclick="cir()">计算</button>
+<div class="out" id="cOut"></div>
+</section>
+
+<section id="exp">
+<h2>实验探究(高频实验)</h2>
+<div class="grid" id="eGrid"></div>
+</section>
+
+<footer>李彦明 15684394135 · 格物君·物理专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【公式+2026-10-05】向心力 F = mv²/r = mω²r (方向指向圆心, 不是一种新的力)</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["力学","质点运动 · 牛顿三定律 · 功和能 · 动量 · 万有引力 · 曲线运动 · 机械能守恒"],
+ ["电磁","静电场 · 恒定电流 · 磁场 · 电磁感应 · 交变电流 · 电路计算"],
+ ["光学","几何光学(折射/全反射) · 波动光学(干涉/衍射/偏振) · 光电效应"],
+ ["热学","气体定律 · 热力学第一定律 · 分子动理论 · 物态变化"],
+ ["实验","力学实验 · 电学实验 · 光电效应 · 碰撞 · 误差分析"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+function calcF(){
+ const t=document.getElementById("fType").value;
+ const a=parseFloat(document.getElementById("a").value)||0;
+ const b=parseFloat(document.getElementById("b").value)||0;
+ const c=parseFloat(document.getElementById("c").value)||0;
+ let r;
+ switch(t){
+  case "s": r=`s = ${a}*${b} + 0.5*${c}*${b}^2 = ${(a*b+0.5*c*b*b).toFixed(2)} m`;break;
+  case "v": r=`v = ${a} + ${c}*${b} = ${(a+c*b).toFixed(2)} m/s`;break;
+  case "F": r=`F = ${a}*${b} = ${(a*b).toFixed(2)} N (m=${a}, a=${b})`;break;
+  case "E": r=`E = 0.5*${a}*${b}^2 = ${(0.5*a*b*b).toFixed(2)} J (m=${a}, v=${b})`;break;
+  case "W": r=`W = ${a}*${b}*cos(${c}°) = ${(a*b*Math.cos(c*Math.PI/180)).toFixed(2)} J`;break;
+  case "P": r=`P = ${a}*${b} = ${(a*b).toFixed(2)} W`;break;
+  case "U": r=`U = ${a}*${b} = ${(a*b).toFixed(2)} V (I=${a}, R=${b})`;break;
+  case "Q": r=`Q = ${a}^2*${b}*${c} = ${(a*a*b*c).toFixed(2)} J`;break;
+  case "g": r=`G = ${a}*${b} = ${(a*b).toFixed(2)} N (m=${a}, g=${b})`;break;
+ }
+ document.getElementById("fOut").textContent=r;
+}
+/* 受力分析画板 */
+const cvs=document.getElementById("cvs"),ctx=cvs.getContext("2d");
+let forces=[];
+function clearF(){forces=[];ctx.clearRect(0,0,cvs.width,cvs.height);drawObj();document.getElementById("fSum").textContent="";}
+function drawObj(){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(cvs.width/2,cvs.height/2,12,0,7);ctx.fill();ctx.strokeStyle="#0e8ba3";ctx.lineWidth=2;ctx.stroke();}
+let dragging=false,px,py;
+cvs.addEventListener("mousedown",e=>{const r=cvs.getBoundingClientRect();px=e.clientX-r.left;py=e.clientY-r.top;dragging=true;});
+cvs.addEventListener("mousemove",e=>{if(!dragging)return;const r=cvs.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;ctx.strokeStyle="#16a34a";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cvs.width/2,cvs.height/2);ctx.lineTo(cx,cy);ctx.stroke();});
+cvs.addEventListener("mouseup",e=>{if(!dragging)return;dragging=false;const r=cvs.getBoundingClientRect();const cx=e.clientX-r.left,cy=e.clientY-r.top;const dx=cx-cvs.width/2,dy=cy-cvs.height/2;const len=Math.hypot(dx,dy);if(len>5)forces.push({dx,dy,len});drawObj();});
+function sumF(){
+ const sx=forces.reduce((s,f)=>s+f.dx,0),sy=forces.reduce((s,f)=>s+f.dy,0);
+ const mag=Math.hypot(sx,sy);
+ document.getElementById("fSum").textContent=`共 ${forces.length} 个力, 合力大小≈${(mag/10).toFixed(1)} (按 10px=1N 估), 方向角 ${Math.atan2(sy,sx).toFixed(2)} rad`;
+}
+/* 电路 */
+function cir(){
+ const E=parseFloat(document.getElementById("E").value)||0;
+ const r=parseFloat(document.getElementById("r").value)||0;
+ const R=parseFloat(document.getElementById("R").value)||0;
+ const I=E/(R+r);const U=I*R;const Pr=I*I*r;const PrR=I*I*R;
+ document.getElementById("cOut").textContent=`总电阻=${R+r}Ω, 电流 I=${I.toFixed(2)}A, 路端电压 U=${U.toFixed(2)}V, 内阻热=${Pr.toFixed(2)}W, 外阻热=${PrR.toFixed(2)}W`;
+}
+/* 实验 */
+const EX=[
+ ["力学","验证牛顿第二定律 · 探究加速度与力质量关系 · 验证机械能守恒 · 测动摩擦因数"],
+ ["电学","测电阻(伏安法) · 测电动势内阻 · 描绘 I-U 曲线 · 半偏法测电阻"],
+ ["光电","光电效应 · 测普朗克常数 · 双缝干涉测波长"],
+ ["热学","测比热容 · 气体等温变化"],
+];
+document.getElementById("eGrid").innerHTML=EX.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 格物君·物理专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 格物君·物理专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('推导向心力 F=mv²/r=mω²r')">推导向心力 F=mv²/r=mω²r</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('单摆测 g 实验误差分析')">单摆测 g 实验误差分析</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('一道力学综合题')">一道力学综合题</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 格物君·物理专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 格物君·物理专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 格物君·物理专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是格物君·物理专家团，全学段物理含理论实验。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>

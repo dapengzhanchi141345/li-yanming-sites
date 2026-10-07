@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>锦心子·语文专家团 — 全学段语文系统</title>
+<style>
+:root{--bg:#fbf7f0;--card:#fffdf8;--ink:#3a2f28;--accent:#8b5a2b;--accent2:#c17a3c;--soft:#f3e8d8;--ok:#3d7a3d;--bad:#b23a3a;--line:#e8dcc8}
+*{margin:0;box-sizing:border-box}
+body{font-family:"KaiTi","STKaiti","Microsoft YaHei",serif;background:var(--bg);color:var(--ink);line-height:1.85}
+header{background:linear-gradient(120deg,#4a3520,#8b5a2b);color:#f5ecdd;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px;font-family:inherit}
+input{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.poem{background:var(--card);border-left:4px solid var(--accent);padding:14px;margin:10px 0;border-radius:6px;font-size:16px}
+.poem .blank{color:#999;border-bottom:1px dashed #999;cursor:pointer;padding:0 4px;transition:.2s}
+.poem .blank:hover{color:var(--accent)}
+.poem .blank.show{color:var(--ok);border-color:var(--ok)}
+.note{background:#f3e8d8;border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+.answer{display:none;background:#eaf3ea;border:1px solid #bcd4bc;border-radius:8px;padding:12px;margin-top:8px;font-size:14px}
+.answer.on{display:block}
+footer{text-align:center;padding:20px;color:#888;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>锦心子 · 语文专家团</h1>
+<p>全学段语文系统 · 小学→初中→高中 · 字词/阅读/古诗文/写作 · 默写点字 · 阅读题 · 病句修改 · 作文素材 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="poem">古诗文默写</button>
+<button data-t="read">阅读理解</button>
+<button data-t="disease">病句修改</button>
+<button data-t="essay">作文素材</button>
+<button data-t="word">字词积累</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按学段点卡片看核心考点; 古诗文用「默写点字」自测, 阅读用「阅读理解」练手。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="poem">
+<h2>古诗文默写(点空白字显示)</h2>
+<p>读诗后点 <span style="border-bottom:1px dashed #999">空白</span> 自测, 点一下显示原字, 全对再读下一首。</p>
+<div id="poemBox"></div>
+</section>
+
+<section id="read">
+<h2>阅读理解(点「显示答案」对照)</h2>
+<div id="readBox"></div>
+</section>
+
+<section id="disease">
+<h2>病句修改(找错 + 改对)</h2>
+<p>每句找病因, 点「显示答案」看正确改法。</p>
+<div id="dBox"></div>
+</section>
+
+<section id="essay">
+<h2>作文素材库(分类)</h2>
+<div class="grid" id="eGrid"></div>
+</section>
+
+<section id="word">
+<h2>字词积累(常考易错)</h2>
+<div class="grid" id="wGrid"></div>
+</section>
+
+<footer>李彦明 15684394135 · 锦心子·语文专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【默写+2026-10-05】《观书有感》朱熹: 问渠那得清如许? 为有源头活水来。</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["小学语文","拼音与易错字 · 近义词反义词 · 成语积累 · 句子仿写 · 阅读理解 · 看图写话 · 背诵默写"],
+ ["初中语文","字词读音 · 语病辨析 · 标点用法 · 文言文实词虚词 · 古诗鉴赏 · 现代文阅读 · 名著阅读 · 作文(记叙文)"],
+ ["高中语文","现代文阅读(论述/实用/文学) · 文言文翻译与断句 · 古诗鉴赏(手法+情感) · 语用衔接 · 写作(议论文/任务驱动) · 整本书阅读"],
+ ["高频考点","字音字形 · 成语 · 病句 · 标点 · 句式变换 · 语句连贯 · 图文转换 · 压缩语段"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+/* 古诗默写: 空白点显字 */
+const POEMS=[
+ {t:"《静夜思》李白",l:["床前明__光, 疑是地上霜。", "__头望明月, 低头思故乡。"],a:["月","举"]},
+ {t:"《春晓》孟浩然",l:["春眠不觉晓, 处处闻__歌。", "夜来风雨声, 花落知多__。"],a:["鸟","少"]},
+ {t:"《望岳》杜甫",l:["会当凌绝顶, 一__众山小。","","__当临绝顶, 一览众山小。"]},
+ {t:"《水调歌头》苏轼",l:["但愿人长久, 千里共清__。"],a:["风"]},
+ {t:"《岳阳楼记》范仲淹",l:["先天下之忧而__, 后天下之乐而__。"],a:["忧","乐"]},
+];
+document.getElementById("poemBox").innerHTML=POEMS.map((p,i)=>`
+ <div class="poem"><h3>${p.t}</h3>
+ ${p.l.filter(x=>x).map((line,j)=>line.replace(/_/g,`<span class="blank" onclick="showB(this,'${p.a?(p.a[j]||p.a[p.a.length-1]):'?'}')\">__</span>`)).join("<br>")}
+ </div>`).join("");
+function showB(el,ch){el.textContent=ch;el.classList.add("show")}
+
+/* 阅读理解 */
+const READ=[
+ {t:"《背影》节选",q:"父亲 '慢慢探身下去' 的 '探' 字好在哪里?",
+  ans:"'探' 写出父亲年老体胖、行动不便, 仍努力买橘子的艰难, 体现深沉父爱与 '我' 的感动, 用词精确传神。"},
+ {t:"《荷塘月色》",q:"'月光如流水一般, 静静地泻在这一片叶子和花上' 的 '泻' 能否改为 '照'?",
+  ans:"不能。'泻' 把月光比作流水, 突出其流动、倾洒的动态美与通感手法; '照' 是静态, 失去月色如水的生动意象。"},
+ {t:"文言文《桃花源记》",q:"'阡陌交通, 鸡犬相闻' 中的 '交通' 古义是什么?",
+  ans:"古义: 交错相通(田间小路纵横)。今义: 指运输事业/出行方式。这是古今异义词, 答题要点明古今义之别。"},
+];
+document.getElementById("readBox").innerHTML=READ.map(r=>`
+ <div class="card"><h3>${r.t}</h3><p>${r.q}</p>
+ <button class="btn" onclick="this.nextElementSibling.classList.toggle('on')">显示答案</button>
+ <div class="answer">参考答案: ${r.ans}</div></div>`).join("");
+
+/* 病句 */
+const DIS=[
+ {s:"通过这次活动, 使我受到了深刻的教育。",a:"成分残缺(缺主语): '使' 字句吞掉主语。改: 这次活动使我受到了深刻的教育。 / 通过这次活动, 我受到了深刻的教育。"},
+ {s:"他虽然很聪明, 所以学习很努力。",a:"关联词搭配错: '虽然' 应与 '但是' 搭配。改: 他虽然很聪明, 但是学习很努力。"},
+ {s:"避免今后不再犯类似错误。",a:"否定失当: '避免…不再' 双重否定=要犯, 逻辑反了。改: 避免今后再犯类似错误。"},
+ {s:"我们要学会用正确的态度去面对困难。",a:"搭配不当: '学会…面对' 不搭。改: 我们要以正确的态度去面对困难。"},
+];
+document.getElementById("dBox").innerHTML=DIS.map(d=>`
+ <div class="card"><p>⚠ ${d.s}</p>
+ <button class="btn" onclick="this.nextElementSibling.classList.toggle('on')">显示答案</button>
+ <div class="answer">病因与改法: ${d.a}</div></div>`).join("");
+
+/* 作文素材 */
+const ES=[
+ ["人物","钱学森(归国奉献) · 张桂梅(坚守山区教育) · 苏轼(豁达) · 史铁生(与命运和解)"],
+ ["品质","坚韧 · 诚信 · 责任 · 担当 · 奉献 · 创新 · 自律 · 家国情怀"],
+ ["哲理","塞翁失马(祸福相依) · 水滴石穿(坚持) · 和而不同(包容) · 千里之行始于足下"],
+ ["时事","科技自立自强 · 文化自信(国潮/非遗) · 乡村振兴 · 绿水青山 · 志愿服务"],
+ ["名句","路漫漫其修远兮 · 功成不必在我 · 凡心所向素履以往 · 苔花如米小, 也学牡丹开"],
+];
+document.getElementById("eGrid").innerHTML=ES.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+/* 字词 */
+const W=[
+ ["字音","炽热chì · 炽zhi? 应chì · 粗糙cāo · 纤纤qiān · 锲而不舍qiè · 慰藉jiè · 缱绻qiǎn"],
+ ["字形","松弛(非'松驰') · 呕心沥血(非'沤') · 金榜题名(非'命题') · 一如继往? 应'一如既往'"],
+ ["成语","差强人意(大体满意, 非不好) · 首当其冲(最先, 非首先做) · 美轮美奂(建筑, 非物品) · 望其项背(接近, 多用于否定)"],
+];
+document.getElementById("wGrid").innerHTML=W.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 锦心子·语文专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 锦心子·语文专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('分析《观书有感》\'问渠那得清如许\'的哲理')">分析《观书有感》'问渠那得清如许'的</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('给一段文字做病句修改')">给一段文字做病句修改</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('文言文《岳阳楼记》翻译+细读')">文言文《岳阳楼记》翻译+细读</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 锦心子·语文专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 锦心子·语文专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 锦心子·语文专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是锦心子·语文专家团，全学段语文含文本细读+阅卷。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>码智君·信息科技专家团 — 全学段信息科技系统</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--accent:#38bdf8;--accent2:#22d3ee;--soft:#1e3a5f;--ok:#4ade80;--bad:#f87171;--line:#334155}
+*{margin:0;box-sizing:border-box}
+body{font-family:Consolas,"Microsoft YaHei",monospace,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:linear-gradient(120deg,#0f172a,#1e3a5f);color:#fff;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#0f172a;color:#e2e8f0;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#0f172a;border-color:var(--accent);font-weight:bold}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#0f172a;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px;font-weight:bold}
+textarea,input{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#0f172a;color:#e2e8f0;width:100%}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px;white-space:pre-wrap}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.note{background:var(--soft);border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>码智君 · 信息科技专家团</h1>
+<p>全学段信息科技系统 · 小学→高中→竞赛 · 计算思维/数据/编程 · 代码判读 · 伪代码写题 · 信息编码 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="code">代码判读</button>
+<button data-t="pseudo">伪代码</button>
+<button data-t="bits">信息编码</button>
+<button data-t="algo">算法基础</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按模块点卡片看考点; 编程用「代码判读」练, 信息学奥赛看「算法基础」。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="code">
+<h2>代码判读(看代码选输出)</h2>
+<p>当前: <b id="cScore">0</b>/<span id="cTotal">0</span></p>
+<div id="cBox"></div>
+</section>
+
+<section id="pseudo">
+<h2>伪代码练习(输入求输出)</h2>
+<div class="card">
+<h3>程序: 输入 n, 输出 1 到 n 的和</h3>
+<pre style="background:#0f172a;padding:10px;border-radius:6px;font-size:14px">s = 0
+for i = 1 to n:
+    s = s + i
+print(s)</pre>
+n 输入: <input id="pn" value="100" style="width:70px"> <button class="btn" onclick="runPseudo()">运行</button>
+<div class="out" id="pOut"></div>
+</div>
+</section>
+
+<section id="bits">
+<h2>信息编码(进制转换 + 字符编码)</h2>
+<p>十进制 <input id="d" value="42" style="width:70px"> → 二进制/八进制/十六进制</p>
+<button class="btn" onclick="toBin()">转换</button>
+<p style="margin-top:12px"><b>字符 ASCII(取整数字符)</b> A=65 a=97 0=48, 数字 <input id="ci" value="A" style="width:50px"> → <button class="btn" onclick="toAsc()">ASCII 码</button></p>
+<div class="out" id="bOut"></div>
+</section>
+
+<section id="algo">
+<h2>算法基础(信息学奥赛高频)</h2>
+<div class="grid" id="aGrid"></div>
+</section>
+
+<footer>李彦明 15684394135 · 码智君·信息科技专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【代码+2026-10-05】递归求阶乘: fact(n)=n*fact(n-1), fact(0)=1 (必须写终止条件)</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["小学","计算机组成 · 信息获取与处理 · 简单程序体验 · 网络常识 · 数字安全"],
+ ["初中","算法与程序设计(顺序/分支/循环) · 数据与数据结构 · 过程与方法 · 网络与信息安全"],
+ ["高中","编程基础(函数/模块) · 数据结构(栈队列树图) · 算法(排序/查找/递归) · 数据模型 · 人工智能初探"],
+ ["信息学奥赛(NOIP)", "C++ 基础 · 动态规划 · 图论 · 数论 · 字符串 · 数据结构(线段树)"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+const CODE=[
+ ["C语言","a=3; b=5; c = a + b*2; 输出 c = ?","13"],
+ ["Python","for i in range(1,4): print(i, end=' ') 输出?","1 2 3"],
+ ["C语言","while(n<5): n+=2  初始 n=1, 循环几次?","2 次(n: 3→5)"],
+ ["算法","冒泡排序 5 个元素, 最坏比较次数?","10 次(C(5,2))"],
+ ["数组","a[0]=0, a[i]=a[i-1]+i, a[3]=?","6 (0+1+2+3)"],
+];
+let cs=0,ct=0,ci=0;
+function cNext(){
+ ct++;document.getElementById("cTotal").textContent=ct;
+ const it=CODE[ci];ci=(ci+1)%CODE.length;
+ document.getElementById("cBox").innerHTML=`<div class="card"><span class="tag">${it[0]}</span><h3>${it[1]}</h3>
+ <button class="btn" onclick="cans()">显示答案</button>
+ <div class="out" id="cFb"></div></div>`;
+}
+function cans(){
+ const it=CODE[(ci-1+CODE.length)%CODE.length];
+ document.getElementById("cFb").textContent="答案: "+it[2];
+}
+cNext();
+
+function runPseudo(){
+ const n=parseInt(document.getElementById("pn").value)||0;
+ let s=0;for(let i=1;i<=n;i++)s+=i;
+ document.getElementById("pOut").textContent=`输出: ${s}`;
+}
+
+function toBin(){
+ const d=parseInt(document.getElementById("d").value)||0;
+ document.getElementById("bOut").textContent=`十进制 ${d} →\n二进制 ${d.toString(2)}\n八进制 ${d.toString(8)}\n十六进制 ${d.toString(16).toUpperCase()}`;
+}
+function toAsc(){
+ const c=document.getElementById("ci").value.trim().charAt(0)||"A";
+ document.getElementById("bOut").textContent=`字符 '${c}' 的 ASCII 码 = ${c.charCodeAt(0)}`;
+}
+
+const AL=[
+ ["排序","冒泡 · 选择 · 插入 · 快排(平均O(nlogn)) · 归并 · 堆排"],
+ ["查找","顺序 · 二分(有序, O(logn)) · 哈希 · 跳表"],
+ ["递归与DP","斐波那契 · 背包 · 最长公共子序列 · 状态转移方程"],
+ ["图论","BFS/DFS · Dijkstra · 最短路 · 并查集 · 拓扑排序"],
+];
+document.getElementById("aGrid").innerHTML=AL.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 码智君·信息科技专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 码智君·信息科技专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('递归求阶乘代码+终止条件')">递归求阶乘代码+终止条件</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('二进制/十六进制互转')">二进制/十六进制互转</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('一道信息科技编程题')">一道信息科技编程题</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 码智君·信息科技专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 码智君·信息科技专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 码智君·信息科技专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是码智君·信息科技专家团，信息科技编程8席。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>

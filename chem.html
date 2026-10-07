@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>炼金士·化学专家团 — 全学段化学系统</title>
+<style>
+:root{--bg:#f6faf6;--card:#fff;--ink:#1f3a2b;--accent:#1a7a4a;--accent2:#3fa35f;--soft:#e3f2e8;--ok:#16a34a;--bad:#dc2626;--line:#d5e6dc}
+*{margin:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:linear-gradient(120deg,#0f5132,#3fa35f);color:#fff;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px}
+input,select{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.note{background:#fff7e6;border:1px solid #ffd580;border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+footer{text-align:center;padding:20px;color:#888;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;background:#fff;font-size:14px;margin:10px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left}
+th{background:var(--soft)}
+</style>
+</head>
+<body>
+<header>
+<h1>炼金士 · 化学专家团</h1>
+<p>全学段化学系统 · 初中→高中 · 无机/有机/实验/计算 · 元素周期表 · 方程式配平 · 摩尔计算 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="eq">方程式配平</button>
+<button data-t="mole">摩尔计算</button>
+<button data-t="exp">实验探究</button>
+<button data-t="table">元素速查</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按模块点卡片看核心考点; 化学计算用「摩尔计算」, 方程式用「配平」。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="eq">
+<h2>化学方程式配平(点击检查系数)</h2>
+<p>输入各物质前系数, 点「检查」看是否配平(按原子守恒判)。</p>
+<div class="card">
+<h3>示例: a C₃H₈ + b O₂ → c CO₂ + d H₂O</h3>
+C₃H₈系数 <input id="a1" value="1" style="width:50px"> O₂系数 <input id="a2" value="5" style="width:50px">
+CO₂系数 <input id="a3" value="3" style="width:50px"> H₂O系数 <input id="a4" value="4" style="width:50px">
+<button class="btn" onclick="checkEq()">检查配平</button>
+<div class="out" id="eqOut"></div>
+</div>
+</section>
+
+<section id="mole">
+<h2>摩尔计算(三大守恒)</h2>
+<p>已知 <select id="mType"><option value="nM">物质的量(n)</option><option value="M">摩尔质量(M)</option><option value="N">微粒数(N)</option></select>
+值 <input id="mV" value="1" style="width:70px"> 求 <select id="mWant"><option value="M">质量(m)</option><option value="N">微粒数(N)</option><option value="V">气体体积(标准状况)</option><option value="n">物质的量(n)</option></select>
+<input id="mM" value="44" placeholder="摩尔质量(如CO₂=44)" style="width:100px"> <button class="btn" onclick="calcMole()">计算</button>
+<div class="out" id="mOut"></div>
+</section>
+
+<section id="exp">
+<h2>实验探究(高频实验)</h2>
+<div class="grid" id="eGrid"></div>
+</section>
+
+<section id="table">
+<h2>元素速查(常用)</h2>
+<div class="grid" id="tGrid"></div>
+</section>
+
+<footer>李彦明 15684394135 · 炼金士·化学专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【配平+2026-10-05】4 P + 5 O₂ → 2 P₂O₅ (磷燃烧, 固体+气体=固体)</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["无机化学","原子结构 · 元素周期律 · 化学键 · 离子反应 · 氧化还原 · 金属/非金属及其化合物"],
+ ["有机化学","烃(烷烯炔芳香) · 烃衍生物(醇醛酸酯) · 官能团 · 同分异构 · 有机推断"],
+ ["实验","气体收集与净化 · 物质分离提纯 · 配制溶液 · 化学检验 · 安全操作"],
+ ["计算","摩尔质量 · 物质的量浓度 · 化学方程式计算 · 守恒法 · 极值法"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+function checkEq(){
+ const a=parseFloat(document.getElementById("a1").value)||0;
+ const b=parseFloat(document.getElementById("a2").value)||0;
+ const c=parseFloat(document.getElementById("a3").value)||0;
+ const d=parseFloat(document.getElementById("a4").value)||0;
+ const C=a*3-c*1,H=a*8-d*2,O=b*2-c*2-d*1;
+ const ok=(C===0&&H===0&&O===0);
+ document.getElementById("eqOut").textContent=ok?"✔ 配平正确! (C:"+C+" H:"+H+" O:"+O+")":"✘ 未配平: C差"+C+" H差"+H+" O差"+O;
+}
+
+const NA=6.02e23,Vm=22.4;
+function calcMole(){
+ const t=document.getElementById("mType").value;
+ const v=parseFloat(document.getElementById("mV").value)||0;
+ const M=parseFloat(document.getElementById("mM").value)||0;
+ const want=document.getElementById("mWant").value;
+ let n=M||v;
+ if(t==="nM")n=v;
+ if(t==="M"&&v>0)n=v/M;
+ if(t==="N"&&v>0)n=v/NA;
+ let r;
+ switch(want){
+  case "M": r=`质量 m = n·M = ${n} mol × ${M} g/mol = ${(n*M).toFixed(2)} g`;break;
+  case "N": r=`微粒数 N = n·Nₐ = ${n} × 6.02×10²³ ≈ ${(n*NA).toExponential(2)}`;break;
+  case "V": r=`标准状况体积 V = n·22.4 = ${(n*22.4).toFixed(2)} L`;break;
+  case "n": r=`物质的量 n = ${n} mol`;break;
+ }
+ document.getElementById("mOut").textContent=r;
+}
+
+const EX=[
+ ["气体验证","H₂点燃爆鸣 · CO₂使澄清石灰水变浑浊 · O₂带火星复燃 · NH₃使湿润红色石蕊试纸变蓝"],
+ ["物质分离","蒸馏 · 萃取 · 分液 · 过滤 · 结晶 · 升华 · 渗析"],
+ ["定量","配制一定物质的量浓度溶液 · 酸碱中和滴定 · 测定纯度"],
+ ["安全","浓硫酸稀释 · 气体收集防倒吸 · 可燃气体防爆炸 · 废液处理"],
+];
+document.getElementById("eGrid").innerHTML=EX.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+const EL=[
+ ["H","1 氢","1.008","非金属"],
+ ["C","6 碳","12.011","非金属"],
+ ["N","7 氮","14.007","非金属"],
+ ["O","8 氧","15.999","非金属"],
+ ["Na","11 钠","22.990","碱金属"],
+ ["Mg","12 镁","24.305","碱土"],
+ ["Al","13 铝","26.982","两性"],
+ ["Si","14 硅","28.086","类金属"],
+ ["P","15 磷","30.974","非金属"],
+ ["S","16 硫","32.065","非金属"],
+ ["Cl","17 氯","35.453","卤素"],
+ ["K","19 钾","39.098","碱金属"],
+ ["Ca","20 钙","40.078","碱土"],
+ ["Fe","26 铁","55.845","过渡"],
+ ["Cu","29 铜","63.546","过渡"],
+ ["Zn","30 锌","65.38","过渡"],
+];
+document.getElementById("tGrid").innerHTML="<table><tr><th>符号</th><th>原子序数</th><th>相对原子质量</th><th>族</th></tr>"+EL.map(e=>`<tr><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td></tr>`).join("")+"</table>";
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 炼金士·化学专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 炼金士·化学专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('配平 4P+5O₂→2P₂O₅')">配平 4P+5O₂→2P₂O₅</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('CO₂ 通入过量 NaOH 产物')">CO₂ 通入过量 NaOH 产物</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('一道实验探究题设计')">一道实验探究题设计</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 炼金士·化学专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 炼金士·化学专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 炼金士·化学专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是炼金士·化学专家团，全学段化学含实验探究。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>

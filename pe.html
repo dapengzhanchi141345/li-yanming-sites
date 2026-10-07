@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>圣运君·体育专家团 — 全学段体育与健康系统</title>
+<style>
+:root{--bg:#f1f8f2;--card:#fff;--ink:#1f3a26;--accent:#1f7a3a;--accent2:#2e9b57;--soft:#dcefdd;--ok:#16a34a;--bad:#dc2626;--line:#c9e3cd}
+*{margin:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+header{background:linear-gradient(120deg,#0f4a2a,#2e9b57);color:#fff;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px}
+input,select{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.note{background:#fff7e6;border:1px solid #ffd580;border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+footer{text-align:center;padding:20px;color:#888;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>圣运君 · 体育专家团</h1>
+<p>全学段体育与健康系统 · 小学→高中 · 动作技能/体能体测/球类/健康教育/运动心理/太极养生 · BMI 计算 · 体测达标 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="bmi">BMI / 体测</button>
+<button data-t="sport">球类与动作</button>
+<button data-t="health">健康教育</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按模块点卡片看考点; 体测用「BMI/体测」自测, 动作技能看「球类与动作」。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="bmi">
+<h2>BMI / 体测达标</h2>
+<p>身高 <input id="h" value="170" style="width:70px"> cm, 体重 <input id="w" value="60" style="width:70px"> kg</p>
+<button class="btn" onclick="bmi()">算 BMI</button>
+<div class="out" id="bmiOut"></div>
+</section>
+
+<section id="sport">
+<h2>球类与动作技能</h2>
+<div class="grid" id="sGrid"></div>
+</section>
+
+<section id="health">
+<h2>健康教育(运动科学)</h2>
+<div class="grid" id="hGrid"></div>
+</section>
+
+<footer>李彦明 15684394135 · 圣运君·体育专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【体测+2026-10-05】引体向上: 初中满分标准参考体质健康标准 (非固定值, 查年级)</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["动作技能","基本动作(跑跳投) · 球类技术 · 体操 · 武术/太极 · 舞蹈"],
+ ["体能体测","跑(50m/耐力) · 力量(引体/仰卧起坐) · 柔韧(坐位体前屈) · 体质健康标准"],
+ ["球类","篮球(运球投篮) · 足球(传射) · 排球(垫扣) · 乒乓球/羽毛球"],
+ ["健康教育","运动生理(心率/有氧) · 运动营养 · 运动心理 · 急救 · 中医太极养生 × 青少年"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+function bmi(){
+ const h=parseFloat(document.getElementById("h").value)/100;
+ const w=parseFloat(document.getElementById("w").value);
+ if(!h||!w)return;
+ const b=w/(h*h);
+ let lv;
+ if(b<18.5)lv="偏瘦(青少年注意营养)";
+ else if(b<24)lv="正常";
+ else if(b<28)lv="超重(建议运动干预)";
+ else lv="肥胖(建议就医+运动)";
+ document.getElementById("bmiOut").textContent=`BMI = ${b.toFixed(1)} (${lv}) · 中国成人标准, 青少年参考体质健康评分`;
+}
+
+const SP=[
+ ["篮球","运球(低重心) · 急停跳投 · 突破上篮 · 卡位抢板 · 人盯人/区域联防"],
+ ["足球","停球 · 传中 · 任意球 · 越位规则 · 射门角度"],
+ ["排球","垫球(夹臂) · 二传组织 · 扣球(起跳) · 自由人 · 发球(正/侧)"],
+ ["乒乓球","直拍/横拍 · 弧圈 · 摆速 · 正手攻球 · 台内短球"],
+];
+document.getElementById("sGrid").innerHTML=SP.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+const HT=[
+ ["运动生理","有氧阈值 · 靶心率(最大心率=220-年龄) · 超量恢复 · 运动后拉伸"],
+ ["运动营养","三大产能营养素 · 运动前(碳水) · 运动中(补水) · 运动后(蛋白+糖)"],
+ ["运动心理","赛前焦虑(积极化) · 注意力 · 自我效能 · 心理表象训练"],
+ ["急救与安全","热射病(高温) · 扭伤(冰敷加压) · 骨折固定 · 运动前后热身"],
+];
+document.getElementById("hGrid").innerHTML=HT.map(f=>`<div class="card"><h3>${f[0]}</h3><ul>${f[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 圣运君·体育专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 圣运君·体育专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('引体向上满分标准')">引体向上满分标准</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('太极青少年训练要点')">太极青少年训练要点</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('体测项目评分')">体测项目评分</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 圣运君·体育专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 圣运君·体育专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 圣运君·体育专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是圣运君·体育专家团，体育与健康含体测/球类/太极养生。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>

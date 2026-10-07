@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音律工坊·AI音乐 — 全学段音乐系统</title>
+<style>
+:root{--bg:#fdf5f0;--card:#fff;--ink:#4a2f2f;--accent:#c1440e;--accent2:#e8843c;--soft:#fbe5d5;--ok:#16a34a;--bad:#dc2626;--line:#f0d5c0}
+*{margin:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+header{background:linear-gradient(120deg,#7a2e0e,#e8843c);color:#fff;padding:26px 30px}
+header h1{font-size:26px}
+header p{opacity:.9;font-size:14px;margin-top:6px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 30px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+nav button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+section{display:none;padding:24px 30px;max-width:1000px;margin:0 auto}
+section.on{display:block}
+h2{color:var(--accent);margin:6px 0 14px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{font-size:15px;color:var(--accent2);margin-bottom:6px}
+.card ul{padding-left:18px;font-size:14px}
+.btn{background:var(--accent);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:4px}
+input,select{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+.out{margin-top:12px;padding:12px;background:var(--soft);border-radius:8px;min-height:40px;font-size:15px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);padding:2px 8px;border-radius:20px;font-size:12px;margin:2px}
+.note{background:#fff7e6;border:1px solid #ffd580;border-radius:8px;padding:12px;font-size:14px;margin:10px 0}
+.piano{display:flex;gap:2px;margin:14px 0}
+.piano .w{width:54px;height:140px;background:#fff;border:1px solid #888;border-radius:0 0 4px 4px;cursor:pointer;position:relative;font-size:11px;text-align:center;padding-top:6px}
+.piano .b{width:34px;height:88px;background:#222;color:#fff;border-radius:0 0 3px 3px;cursor:pointer;margin:0 -6px;z-index:2;position:relative;text-align:center;padding-top:6px;font-size:11px}
+footer{text-align:center;padding:20px;color:#888;font-size:13px;margin-top:30px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header>
+<h1>音律工坊 · AI 音乐专家团</h1>
+<p>全学段音乐系统 · 小学→高中 · 乐理/曲式/聆听/表演 · 钢琴键盘 · 音阶识别 · 节奏打拍 · 双击即用(离线单文件)</p>
+</header>
+<nav>
+<button class="on" data-t="know">知识体系</button>
+<button data-t="piano">电子钢琴</button>
+<button data-t="scale">音阶识别</button>
+<button data-t="rhythm">节奏打拍</button>
+</nav>
+
+<section id="know" class="on">
+<h2>全学段知识体系</h2>
+<div class="note">按模块点卡片看考点; 用「电子钢琴」听音高, 用「音阶识别」练绝对音感。</div>
+<div class="grid" id="knowGrid"></div>
+</section>
+
+<section id="piano">
+<h2>电子钢琴(点键发声, 离线)</h2>
+<p>白键 C 到 E(两个八度), 黑键全音阶; 点「播放 C 大调音阶」自动弹。</p>
+<div class="piano" id="pianoBox"></div>
+<button class="btn" onclick="playScale()">播放 C 大调音阶</button>
+</section>
+
+<section id="scale">
+<h2>音阶识别(听音阶判断调式)</h2>
+<p>点「随机音阶」听一段, 猜是大调还是小调(离线: 仅生成音阶, 训练耳朵)。</p>
+<select id="st"><option value="major">C 大调</option><option value="minor">A 小调</option></select>
+<button class="btn" onclick="randScale()">生成音阶</button>
+<div class="out" id="sOut"></div>
+</section>
+
+<section id="rhythm">
+<h2>节奏打拍(元音/节奏型)</h2>
+<p>按「4 拍循环」听节拍器(离线 WebAudio 敲鼓), 数对节奏型再跟唱。</p>
+<button class="btn" onclick="beat()">启动节拍器(4/4)</button>
+<button class="btn" onclick="stopBeat()">停止</button>
+<div class="out" id="bOut">节拍器已准备</div>
+</section>
+
+<footer>李彦明 15684394135 · 音律工坊·AI音乐专家团 · 离线单文件 · 每日升级
+<div style="background:#fffbe6;border-left:4px solid #f5a623;padding:10px;margin:12px 0;font-size:14px">📅 2026-10-05 升级 · 【乐理+2026-10-05】大调音阶全全半全全全半; 小调(自然)全半全全半全全</div>
+</footer>
+
+<script>
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById(b.dataset.t).classList.add("on");
+});
+const K=[
+ ["小学","音乐要素(音高/节奏/强弱) · 聆听与演唱 · 乐器初识 · 节奏模仿"],
+ ["初中","简谱与五线谱 · 乐理基础(音程/和弦/调式) · 欣赏(中外名曲) · 表演(歌唱)"],
+ ["高中","和声学 · 曲式分析 · 音乐史(古典/浪漫/现代) · 视唱练耳 · 作曲基础"],
+ ["考试","音乐鉴赏题 · 谱面识读 · 视唱(音程/节奏) · 创作(短旋律)"],
+];
+document.getElementById("knowGrid").innerHTML=K.map(s=>`<div class="card"><h3>${s[0]}</h3><ul>${s[1].split(" · ").map(x=>`<li>${x}</li>`).join("")}</ul></div>`).join("");
+
+/* 钢琴: 用 WebAudio 生成近似音高(离线, 不依赖音频文件) */
+const NOTE_FREQ={C:261.63,D:293.66,E:329.63,F:349.23,G:392.00,A:440.00,B:493.88};
+let actx=null;
+function ensureCtx(){if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();return actx}
+function beep(n,dur){
+ const ctx=ensureCtx();
+ const o=ctx.createOscillator();const g=ctx.createGain();
+ o.type="sine";o.frequency.value=NOTE_FREQ[n];
+ o.connect(g);g.connect(ctx.destination);
+ o.start();g.gain.setValueAtTime(0.4,ctx.currentTime);
+ g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+dur);
+ o.stop(ctx.currentTime+dur);
+}
+/* 白键 2 个八度 C-C */
+const whites=["C","D","E","F","G","A","B","C","D","E","F","G","A","B","C"];
+const blacks=["C#","D#","F#","G#","A#","C#","D#","F#","G#","A#"];
+const pbox=document.getElementById("pianoBox");
+whites.forEach((n,i)=>{
+ const d=document.createElement("div");d.className="w";d.textContent=n;
+ d.onclick=()=>beep(n,0.4);
+ pbox.appendChild(d);
+ if(blacks[i] && i<blacks.length){
+  const b=document.createElement("div");b.className="b";b.textContent=blacks[i];
+  b.onclick=()=>beep(blacks[i].replace("#",""),0.4);
+  pbox.appendChild(b);
+ }
+});
+function playScale(){
+ const seq=["C","D","E","F","G","A","B","C"];
+ seq.forEach((n,i)=>setTimeout(()=>beep(n,0.5),i*400));
+}
+function randScale(){
+ const t=document.getElementById("st").value;
+ const major=["C","D","E","F","G","A","B","C"];
+ const minor=["A","B","C","D","E","F","G","A"];
+ const seq=t==="major"?major:minor;
+ seq.forEach((n,i)=>setTimeout(()=>beep(n,0.45),i*380));
+ document.getElementById("sOut").textContent="已生成 "+(t==="major"?"C 大调":"A 小调")+" 音阶, 听完后判断调式";
+}
+/* 节拍器: 4/4, 每拍 500ms */
+let beatInt=null;
+function beat(){
+ if(beatInt)return;
+ document.getElementById("bOut").textContent="节拍器运行中 (4/4, 120bpm)";
+ let c=0;
+ beatInt=setInterval(()=>{
+  beep(["C","G","C","E"][c%4],0.25);
+  c++;
+ },500);
+}
+function stopBeat(){clearInterval(beatInt);beatInt=null;document.getElementById("bOut").textContent="节拍器已停止";}
+</script>
+
+<div id="agent-panel" style="margin:20px auto;max-width:720px;border:2px solid #4a90d9;border-radius:12px;padding:16px;background:#f7fbff;font-family:system-ui">
+  <h3 style="margin:0 0 8px;color:#2c5d8f">🤖 音律工坊·AI音乐专家团 · 智能体问答</h3>
+  <p style="font-size:13px;color:#555;margin:0 0 10px">点预设或直接输入问题，调用 音律工坊·AI音乐专家团 的学科能力实时解答（在线时）。离线时显示"在线 AI 暂不可用，看站内题库"。</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('大调/小调音阶全半音')">大调/小调音阶全半音</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('莫扎特变奏曲式解析')">莫扎特变奏曲式解析</button><button style="padding:6px 10px;border-radius:8px;border:1px solid #888;background:#fff;color:#333;cursor:pointer;font-size:12px" onclick="agentAsk('一段乐谱视唱')">一段乐谱视唱</button>
+    <button style="padding:6px 12px;border-radius:8px;border:1px solid #4a90d9;background:#4a90d9;color:#fff;cursor:pointer" onclick="agentAsk('')">问 音律工坊·AI音乐专家团</button>
+  </div>
+  <textarea id="agent-q" placeholder="输入问题，点按钮问 音律工坊·AI音乐专家团..." style="width:100%;height:60px;padding:8px;border:1px solid #ccc;border-radius:8px;font-size:14px"></textarea>
+  <button style="margin-top:8px;padding:8px 16px;border-radius:8px;border:none;background:#2c8a3d;color:#fff;cursor:pointer;font-size:14px" onclick="agentAsk(document.getElementById('agent-q').value)">提问</button>
+  <div id="agent-a" style="margin-top:12px;padding:12px;background:#fff;border-left:4px solid #2c8a3d;border-radius:6px;font-size:14px;min-height:40px;white-space:pre-wrap;color:#333">（等待回答）</div>
+  <script>
+  var AGENT_API = {{base:"https://api.agnes-k2.com/v1", key:"", model:"agnes-flash"}};
+  function agentAsk(q){{
+    if(!q) q=document.getElementById('agent-q').value;
+    if(!q){{document.getElementById('agent-a').textContent='请输入问题';return;}}
+    var a=document.getElementById('agent-a'); a.textContent='\u23F3 音律工坊·AI音乐专家团 思考中...';
+    fetch(AGENT_API.base+'/chat/completions',{{method:'POST',headers:{{'Content-Type':'application/json','Authorization':'Bearer '+AGENT_API.key}},
+      body:JSON.stringify({{model:AGENT_API.model,messages:[{{role:'system',content:'你是音律工坊·AI音乐专家团，词曲编曲混音。回答要专业、准确、可核查，口语化带大白话。'}},{{role:'user',content:q}}],temperature:0.3}})
+    .then(function(r){{return r.json();}}).then(function(d){{
+      a.textContent=(d.choices&&d.choices[0]&&d.choices[0].message)?d.choices[0].message.content:'（无返回）';
+    }}).catch(function(e){{a.textContent='\u26A0 在线 AI 暂不可用('+e.message+')，看站内题库或稍后再试。';}});
+  }}
+  </script>
+</div>
+</body></html>
